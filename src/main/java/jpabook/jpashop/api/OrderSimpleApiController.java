@@ -1,10 +1,7 @@
 package jpabook.jpashop.api;
 
 import jpabook.jpashop.domain.*;
-import jpabook.jpashop.repository.ItemRepository;
-import jpabook.jpashop.repository.MemberRepository;
-import jpabook.jpashop.repository.OrderRepository;
-import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +52,12 @@ public class OrderSimpleApiController {
     public Result<List<SimpleOrderDto>> ordersV3(){
         List<Order> all = orderRepository.findAllWithMemberDelivery(new OrderSearch());
         List<SimpleOrderDto> list = all.stream().map(SimpleOrderDto::new).toList();
+        return new Result<>(list.size(), list);
+    }
+
+    @GetMapping("/api/v4/simple-orders")
+    public Result<List<OrderSimpleQueryDto>> ordersV4(){
+        List<OrderSimpleQueryDto> list = orderRepository.findOrderDtos();
         return new Result<>(list.size(), list);
     }
 

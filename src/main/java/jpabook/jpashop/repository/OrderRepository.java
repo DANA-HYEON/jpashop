@@ -97,4 +97,38 @@ public class OrderRepository {
                 " join fetch o.delivery d", Order.class).getResultList();
     }
 
+    public List<OrderSimpleQueryDto> findOrderDtos() {
+        return em.createQuery(
+                "select new jpabook.jpashop.repository.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address)" +
+                "from Order o" +
+                " join o.member m" +
+                " join o.delivery d", OrderSimpleQueryDto.class)
+                .getResultList();
+    }
+
+    //fetch join
+    //1대다를 페치조인하는 순간 페이징 불가능(페이징 쿼리가 안나감)
+    //메모리에서 sorting처리함
+    //절대 쓰면 안됨
+    public List<Order> findAllWithItems(OrderSearch orderSearch) {
+        return  em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item i", Order.class)
+                .setFirstResult(1)
+                .setMaxResults(10)
+                .getResultList();
+    }
+
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return  em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
